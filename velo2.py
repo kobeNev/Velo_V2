@@ -13,13 +13,11 @@ class Slot:
         if self.beschikbaar:
             self.fiets = fiets
             self.beschikbaar = False
-            print(f"Fiets {fiets.fiets_id} geplaatst in slot {self.slot_id}")
 
     def verwijder_fiets(self, fiets):
         if not self.beschikbaar:
             self.fiets = None
             self.beschikbaar = True
-            print(f"Fiets {fiets.fiets_id} verwijderd uit slot {self.slot_id}")
             return fiets
 
 
@@ -42,18 +40,77 @@ class Station:
         return len([slot for slot in self.sloten if not slot.beschikbaar])
 
 
-fiets = Fiets("F1")
+class Gebruiker:
+    def __init__(self, gebruiker_id, naam):
+        self.gebruiker_id = gebruiker_id
+        self.naam = naam
+        self.max_capaciteit = 1
+        self.fiets = []
+
+    def Leen_fiets(self, fiets):
+        if len(self.fiets) < self.max_capaciteit:
+            self.fiets.append(fiets)
+            fiets_slot = None
+            for slot in Station1.sloten:
+                if slot.fiets == fiets:
+                    fiets_slot = slot
+                    break
+            if fiets_slot:
+                fiets_slot.verwijder_fiets(fiets)
+                print(
+                    f"Fiets {fiets.fiets_id} geleend door {self.naam} uit slot {fiets_slot.slot_id}"
+                )
+            else:
+                print(f"Fiets {fiets.fiets_id} kon niet worden geleend.")
+        else:
+            print(f"Gebruiker {self.naam} heeft al een fiets geleend.")
+
+    def Retourneer_fiets(self, fiets):
+        if fiets in self.fiets:
+            self.fiets.remove(fiets)
+            for slot in Station1.sloten:
+                if slot.beschikbaar:
+                    slot.plaats_fiets(fiets)
+                    print(
+                        f"Fiets {fiets.fiets_id} teruggebracht door {self.naam} in slot {slot.slot_id}"
+                    )
+                    break
+            else:
+                print(
+                    f"Geen beschikbare sloten om de fiets {fiets.fiets_id} terug te brengen."
+                )
+        else:
+            print(f"Gebruiker {self.naam} heeft deze fiets niet geleend.")
+
+
+# Maak instanties van Fiets
+fiets1 = Fiets("F1")
 fiets2 = Fiets("F2")
 
+# Maak een instantie van Station en creëer sloten
 Station1 = Station("S1", "Station1", 10)
 Station1.maak_sloten()
-Station1.sloten[0].plaats_fiets(fiets)
+
+# Plaats fietsen in sloten
+Station1.sloten[0].plaats_fiets(fiets1)
 Station1.sloten[1].plaats_fiets(fiets2)
 
-print(f"{Station1.naam} heeft {Station1.aantal_beschikbare_slots()} vrije plaatsen.")
-print(f"{Station1.naam} heeft {Station1.aantal_beschikbare_fietsen()} aantal fietsen.")
+# Maak een gebruiker
+gebruiker1 = Gebruiker("G1", "Dirk Porré")
 
-Station1.sloten[0].verwijder_fiets(fiets)
+# Toon beschikbare plaatsen en fietsen bij het station
+print(f"{Station1.naam} heeft {Station1.aantal_beschikbare_slots()} vrije plaatsen.")
+print(
+    f"{Station1.naam} heeft {Station1.aantal_beschikbare_fietsen()} fietsen beschikbaar."
+)
+
+gebruiker1.Leen_fiets(fiets2)
+
+gebruiker1.Leen_fiets(fiets1)
+
+gebruiker1.Retourneer_fiets(fiets2)
 
 print(f"{Station1.naam} heeft {Station1.aantal_beschikbare_slots()} vrije plaatsen.")
-print(f"{Station1.naam} heeft {Station1.aantal_beschikbare_fietsen()} aantal fietsen.")
+print(
+    f"{Station1.naam} heeft {Station1.aantal_beschikbare_fietsen()} fietsen beschikbaar."
+)
