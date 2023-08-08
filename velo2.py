@@ -1,3 +1,6 @@
+import json
+
+
 class Fiets:
     def __init__(self, fiets_id):
         self.fiets_id = fiets_id
@@ -38,6 +41,9 @@ class Station:
 
     def aantal_beschikbare_fietsen(self):
         return len([slot for slot in self.sloten if not slot.beschikbaar])
+
+    def __str__(self):
+        return f"{self.naam} heeft {self.aantal_beschikbare_slots()} vrije plaatsen, en {self.aantal_beschikbare_fietsen()} fietsen beschikbaar."
 
 
 class Gebruiker:
@@ -83,34 +89,43 @@ class Gebruiker:
             print(f"Gebruiker {self.naam} heeft deze fiets niet geleend.")
 
 
-# Maak instanties van Fiets
+"""aanmaken atributen"""
+
 fiets1 = Fiets("F1")
 fiets2 = Fiets("F2")
 
-# Maak een instantie van Station en creëer sloten
 Station1 = Station("S1", "Station1", 10)
 Station1.maak_sloten()
 
-# Plaats fietsen in sloten
 Station1.sloten[0].plaats_fiets(fiets1)
 Station1.sloten[1].plaats_fiets(fiets2)
 
-# Maak een gebruiker
-gebruiker1 = Gebruiker("G1", "Dirk Porré")
 
-# Toon beschikbare plaatsen en fietsen bij het station
-print(f"{Station1.naam} heeft {Station1.aantal_beschikbare_slots()} vrije plaatsen.")
-print(
-    f"{Station1.naam} heeft {Station1.aantal_beschikbare_fietsen()} fietsen beschikbaar."
-)
+def maak_gebruikers_van_json():
+    with open("namenlijst.json", "r") as json_file:
+        json_gegevens = json.load(json_file)
 
-gebruiker1.Leen_fiets(fiets2)
+    gebruikers = []
 
-gebruiker1.Leen_fiets(fiets1)
+    for index, item in enumerate(json_gegevens):
+        naam = item["name"]
+        gebruiker = Gebruiker(f"G{index}", naam)
+        gebruikers.append(gebruiker)
+    return gebruikers
 
-gebruiker1.Retourneer_fiets(fiets2)
 
-print(f"{Station1.naam} heeft {Station1.aantal_beschikbare_slots()} vrije plaatsen.")
-print(
-    f"{Station1.naam} heeft {Station1.aantal_beschikbare_fietsen()} fietsen beschikbaar."
-)
+"""testen van de functies"""
+
+print(Station1)
+
+gebruikers = maak_gebruikers_van_json()
+
+gebruikers[0].Leen_fiets(fiets2)
+
+print(Station1)
+
+gebruikers[0].Leen_fiets(fiets1)
+
+gebruikers[0].Retourneer_fiets(fiets2)
+
+print(Station1)
