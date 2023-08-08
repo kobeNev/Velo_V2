@@ -30,6 +30,7 @@ class Station:
         self.naam = naam
         self.sloten = []
         self.capaciteit = capaciteit
+        self.maak_sloten()
 
     def maak_sloten(self):
         for i in range(self.capaciteit):
@@ -98,10 +99,11 @@ def maak_gebruikers_van_json(json_bestand):
 
     gebruikers = []
 
-    for index, item in enumerate(json_gegevens):
-        naam = item["name"]
-        gebruiker = Gebruiker(f"G{index}", naam)
-        gebruikers.append(gebruiker)
+    while len(gebruikers) < 55000:
+        for index, item in enumerate(json_gegevens):
+            naam = item["name"]
+            gebruiker = Gebruiker(f"G{index}", naam)
+            gebruikers.append(gebruiker)
     return gebruikers
 
 
@@ -121,25 +123,34 @@ def maak_stations_van_json(json_bestand):
     return stations
 
 
-"""testen van de functies"""
+def maak_fietsen():
+    fietsen = []
+    for i in range(1, 4201):
+        fiets = Fiets(f"F{i}")
+        fietsen.append(fiets)
+    return fietsen
 
+
+"""testen van de functies"""
+# jsons omzetten naar objecten
 gebruikers = maak_gebruikers_van_json("namenlijst.json")
 stations = maak_stations_van_json("velo.geojson")
+# fietsen en sloten aanmaken
+fietsen = maak_fietsen()
 
-fiets1 = Fiets("F1")
-fiets2 = Fiets("F2")
+stations[15].sloten[0].plaats_fiets(fietsen[0])
+stations[15].sloten[1].plaats_fiets(fietsen[1])
 
-stations[15].maak_sloten()
-
-stations[15].sloten[0].plaats_fiets(fiets1)
-stations[15].sloten[1].plaats_fiets(fiets2)
-
-gebruikers[0].Leen_fiets(fiets2, stations[1])
+gebruikers[0].Leen_fiets(fietsen[0], stations[15])
 
 print(stations[15])
 
-gebruikers[0].Leen_fiets(fiets1, stations[1])
+gebruikers[0].Leen_fiets(fietsen[0], stations[15])
 
-gebruikers[0].Retourneer_fiets(fiets2, stations[1])
+gebruikers[0].Retourneer_fiets(fietsen[0], stations[15])
 
 print(stations[15])
+
+print(
+    f"momenteel in het systeem:\n{len(gebruikers)} gebruikers, {len(stations)} stations en {len(fietsen)} fietsen."
+)
