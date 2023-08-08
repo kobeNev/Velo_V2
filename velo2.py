@@ -53,11 +53,11 @@ class Gebruiker:
         self.max_capaciteit = 1
         self.fiets = []
 
-    def Leen_fiets(self, fiets):
+    def Leen_fiets(self, fiets, station):
         if len(self.fiets) < self.max_capaciteit:
             self.fiets.append(fiets)
             fiets_slot = None
-            for slot in Station1.sloten:
+            for slot in station.sloten:
                 if slot.fiets == fiets:
                     fiets_slot = slot
                     break
@@ -71,10 +71,10 @@ class Gebruiker:
         else:
             print(f"Gebruiker {self.naam} heeft al een fiets geleend.")
 
-    def Retourneer_fiets(self, fiets):
+    def Retourneer_fiets(self, fiets, station):
         if fiets in self.fiets:
             self.fiets.remove(fiets)
-            for slot in Station1.sloten:
+            for slot in station.sloten:
                 if slot.beschikbaar:
                     slot.plaats_fiets(fiets)
                     print(
@@ -91,18 +91,9 @@ class Gebruiker:
 
 """aanmaken atributen"""
 
-fiets1 = Fiets("F1")
-fiets2 = Fiets("F2")
 
-Station1 = Station("S1", "Station1", 10)
-Station1.maak_sloten()
-
-Station1.sloten[0].plaats_fiets(fiets1)
-Station1.sloten[1].plaats_fiets(fiets2)
-
-
-def maak_gebruikers_van_json():
-    with open("namenlijst.json", "r") as json_file:
+def maak_gebruikers_van_json(json_bestand):
+    with open(json_bestand, "r") as json_file:
         json_gegevens = json.load(json_file)
 
     gebruikers = []
@@ -114,18 +105,41 @@ def maak_gebruikers_van_json():
     return gebruikers
 
 
+def maak_stations_van_json(json_bestand):
+    with open(json_bestand, "r") as json_file:
+        json_gegevens = json.load(json_file)
+
+    stations = []
+
+    for item in json_gegevens["features"]:
+        naam = item["properties"]["Naam"]
+        capaciteit = item["properties"]["Aantal_plaatsen"]
+        station = Station(item["properties"]["Objectcode"], naam, capaciteit)
+        station.maak_sloten()
+        stations.append(station)
+
+    return stations
+
+
 """testen van de functies"""
 
-print(Station1)
+gebruikers = maak_gebruikers_van_json("namenlijst.json")
+stations = maak_stations_van_json("velo.geojson")
 
-gebruikers = maak_gebruikers_van_json()
+fiets1 = Fiets("F1")
+fiets2 = Fiets("F2")
 
-gebruikers[0].Leen_fiets(fiets2)
+stations[15].maak_sloten()
 
-print(Station1)
+stations[15].sloten[0].plaats_fiets(fiets1)
+stations[15].sloten[1].plaats_fiets(fiets2)
 
-gebruikers[0].Leen_fiets(fiets1)
+gebruikers[0].Leen_fiets(fiets2, stations[1])
 
-gebruikers[0].Retourneer_fiets(fiets2)
+print(stations[15])
 
-print(Station1)
+gebruikers[0].Leen_fiets(fiets1, stations[1])
+
+gebruikers[0].Retourneer_fiets(fiets2, stations[1])
+
+print(stations[15])
