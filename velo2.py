@@ -1,4 +1,5 @@
 import json
+import random
 
 
 class Fiets:
@@ -90,6 +91,19 @@ class Gebruiker:
             print(f"Gebruiker {self.naam} heeft deze fiets niet geleend.")
 
 
+class Velo:
+    def __init__(self):
+        self.velo_stations = []
+        self.gebruikers = []
+        self.transporteurs = []
+
+    def __str__(self):
+        return f"Velo heeft {len(self.velo_stations)} stations, {len(self.gebruikers)} gebruikers en {len(self.transporteurs)} transporteurs."
+
+    def voeg_stations_toe(self, stations):
+        self.velo_stations.extend(stations)
+
+
 """aanmaken atributen"""
 
 
@@ -125,10 +139,34 @@ def maak_stations_van_json(json_bestand):
 
 def maak_fietsen():
     fietsen = []
-    for i in range(1, 4201):
+    for i in range(1, 9950):
         fiets = Fiets(f"F{i}")
         fietsen.append(fiets)
     return fietsen
+
+
+def plaats_fietsen_in_station(stations, fietsen):
+    random.shuffle(stations)  # Meng de volgorde van de stations willekeurig
+    random.shuffle(fietsen)  # Meng de volgorde van de fietsen willekeurig
+
+    for station in stations:
+        # Bepaal een willekeurig aantal fietsen om toe te wijzen aan dit station
+        aantal_fietsen = random.randint(
+            0, min(len(fietsen), station.aantal_beschikbare_slots())
+        )
+
+        for _ in range(aantal_fietsen):
+            slot = next((s for s in station.sloten if s.beschikbaar), None)
+            if slot:
+                slot.plaats_fiets(fietsen.pop())
+    print("Aangepaste stations:")
+    for station in stations:
+        print(
+            f"Station: {station.naam}, Aantal beschikbare fietsen: {station.aantal_beschikbare_fietsen()}"
+        )
+
+    print("\nOvergebleven fietsen:")
+    print(len(fietsen))
 
 
 """testen van de functies"""
@@ -137,11 +175,12 @@ gebruikers = maak_gebruikers_van_json("namenlijst.json")
 stations = maak_stations_van_json("velo.geojson")
 # fietsen en sloten aanmaken
 fietsen = maak_fietsen()
+velo = Velo()
+# fietsen plaatsen in stations
+plaats_fietsen_in_station(stations, fietsen)
+velo.voeg_stations_toe(stations)
 
-stations[15].sloten[0].plaats_fiets(fietsen[0])
-stations[15].sloten[1].plaats_fiets(fietsen[1])
-
-gebruikers[0].Leen_fiets(fietsen[0], stations[15])
+"""gebruikers[0].Leen_fiets(fietsen[0], stations[15])
 
 print(stations[15])
 
@@ -149,8 +188,6 @@ gebruikers[0].Leen_fiets(fietsen[0], stations[15])
 
 gebruikers[0].Retourneer_fiets(fietsen[0], stations[15])
 
-print(stations[15])
+print(stations[15])"""
 
-print(
-    f"momenteel in het systeem:\n{len(gebruikers)} gebruikers, {len(stations)} stations en {len(fietsen)} fietsen."
-)
+print(Velo())
