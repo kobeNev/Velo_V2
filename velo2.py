@@ -180,7 +180,7 @@ velo = Velo()
 plaats_fietsen_in_station(stations, fietsen)
 velo.voeg_stations_toe(stations)
 
-"""gebruikers[0].Leen_fiets(fietsen[0], stations[15])
+gebruikers[0].Leen_fiets(fietsen[0], stations[15])
 
 print(stations[15])
 
@@ -188,6 +188,6 @@ gebruikers[0].Leen_fiets(fietsen[0], stations[15])
 
 gebruikers[0].Retourneer_fiets(fietsen[0], stations[15])
 
-print(stations[15])"""
+print(stations[15])
 
 print(Velo())
